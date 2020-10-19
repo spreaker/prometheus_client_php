@@ -168,6 +168,7 @@ class APC implements Adapter
                 'help' => $metaData['help'],
                 'type' => $metaData['type'],
                 'labelNames' => $metaData['labelNames'],
+                'sample' => [],
             ];
             foreach (new APCUIterator('/^prom:counter:' . $metaData['name'] . ':.*:value/') as $value) {
                 $parts = explode(':', $value['key']);
@@ -179,8 +180,11 @@ class APC implements Adapter
                     'value' => $value['value'],
                 ];
             }
-            $this->sortSamples($data['samples']);
-            $counters[] = new MetricFamilySamples($data);
+
+            if (!empty($data['samples'])) {
+                $this->sortSamples($data['samples']);
+                $counters[] = new MetricFamilySamples($data);
+            }
         }
         return $counters;
     }
@@ -198,6 +202,7 @@ class APC implements Adapter
                 'help' => $metaData['help'],
                 'type' => $metaData['type'],
                 'labelNames' => $metaData['labelNames'],
+                'samples' => [],
             ];
             foreach (new APCUIterator('/^prom:gauge:' . $metaData['name'] . ':.*:value/') as $value) {
                 $parts = explode(':', $value['key']);
@@ -210,8 +215,10 @@ class APC implements Adapter
                 ];
             }
 
-            $this->sortSamples($data['samples']);
-            $gauges[] = new MetricFamilySamples($data);
+            if (!empty($data['samples'])) {
+                $this->sortSamples($data['samples']);
+                $gauges[] = new MetricFamilySamples($data);
+            }
         }
         return $gauges;
     }
